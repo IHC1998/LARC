@@ -43,7 +43,7 @@ cY3=0
 A=0
 Cximg=320
 Cyimg=240
-caso=0
+q=0
 
 while (cap.isOpened()):
     ret, img = cap.read()
@@ -66,6 +66,7 @@ while (cap.isOpened()):
              cY2=cY1
              cY1=cY0
              cY0=cY
+             q=q+1
              k=abs(int(Cximg-cX))
              j=abs(int(Cyimg-cY))
              if (j-k)<0:
@@ -93,18 +94,12 @@ while (cap.isOpened()):
                   if (abs(erro)<=25) & (abs(dy)<=15):
                      print('Correto')
                   else:
-                     if (erro<0) & (abs(dy)<=15):
+                     if (abs(dy)<=15):
                          if (A==0):
-                             print('Movimento translacional para direita para corrigir')
+                             print('Movimento translacional, distancia de',-erro)
                          elif (A==1):
                              i=i-1
-                             A=0
-                     elif (erro>0) & (abs(dy)<=15):
-                         if (A==0):
-                             print('Movimento translacional para esquerda para corrigir')
-                         elif (A==1):
-                             i=i-1
-                             A=0
+                             A=0                 
                      else:
                          angulo=atan((cY-Cyimg)/(cX-Cximg))*180/3.14
                          print('Movimento rotacional, angulo de',angulo)                  
@@ -123,7 +118,52 @@ while (cap.isOpened()):
                       print('B:',b)
                
              elif  (j-k)>0:
-                    print('Novo caso')
+                 if (abs(cY0-cY2)<=10) & (abs(cY1-cY3)<=10) & (abs(cY0-cY1)>50) & (abs(cY2-cY3)>50):
+                  if (a!=0) & ((a%2)==0):
+                      i=0
+                      a=0
+                  elif (a!=0) & ((a%2)==1):
+                      i=1
+                      a=0
+                  elif (b!=0) & ((b%2)==0):
+                      i=1
+                      b=0
+                  elif (b!=0) & ((b%2)==1):
+                      i=0
+                      b=0
+                  
+                  i=i+1
+                  dx=int(qx-cX)
+                  qx=cX
+                  dy=Cyimg-cY
+                  erro=int(dy+qy)
+                  qy=dy
+                  print('I:',i)
+                  if (abs(erro)<=25) & (abs(dx)<=15):
+                     print('Correto')
+                  else:
+                     if (abs(dx)<=15):
+                         if (A==0):
+                             print('Movimento translacional, distancia de', erro)
+                         elif (A==1):
+                             i=i-1
+                             A=0
+                     else:
+                         angulo=atan((cX-Cximg)/(cY-Cyimg))*180/3.14
+                         print('Movimento rotacional, angulo de',-angulo)                  
+                    
+                     
+                 else: 
+                  if (i%2)==0:
+                      a=a+1
+                      b=0
+                      A=1
+                      print('A:',a)
+                  elif (i%2)==1:
+                      b=b+1
+                      a=0
+                      A=1
+                      print('B:',b)
 
             else:
              cX, cY = 0, 0
