@@ -1,9 +1,12 @@
 import numpy as np
 import cv2
 from math import atan
+import RPi.GPIO as gpio
+import time
 
 
 #open_can
+gpio.setmode(gpio.BOARD)
 cap = cv2.VideoCapture(1)
 
 #define_resolution
@@ -44,6 +47,7 @@ A=0
 Cximg=320
 Cyimg=240
 q=0
+gpio.setup(11, gpio.OUT)
 
 while (cap.isOpened()):
     ret, img = cap.read()
@@ -93,6 +97,7 @@ while (cap.isOpened()):
                   print('I:',i)
                   if (abs(erro)<=25) & (abs(dy)<=15):
                      print('Correto')
+                     gpio.output(11, gpio.HIGH)
                   else:
                      if (abs(dy)<=15):
                          if (A==0):
@@ -104,6 +109,11 @@ while (cap.isOpened()):
                          angulo=atan((cY-Cyimg)/(cX-Cximg))*180/3.14
                          print('Movimento rotacional, angulo de',angulo)                  
                     
+                 elif (abs(cX0-cX2)<=10) & (abs(cY1-cY3)>30) & (abs(cX0-cX1)>50) & (abs(cX2-cX3)>50):
+                     print('Curva em L')
+                 elif((abs(cY0-cY2)>30) & (abs(cX1-cX3)<=10) & (abs(cX0-cX1)>50) & (abs(cX2-cX3)>50)):
+                     print('Curva em L')
+
                      
                  else: 
                   if (i%2)==0:
@@ -116,6 +126,7 @@ while (cap.isOpened()):
                       a=0
                       A=1
                       print('B:',b)
+
                
              elif  (j-k)>0:
                  if (abs(cY0-cY2)<=10) & (abs(cY1-cY3)<=10) & (abs(cY0-cY1)>50) & (abs(cY2-cY3)>50):
