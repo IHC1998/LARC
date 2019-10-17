@@ -47,6 +47,8 @@ A=0
 Cximg=320
 Cyimg=240
 q=0
+k=0
+metadedafita=20
 gpio.setup(11, gpio.OUT)
 
 while (cap.isOpened()):
@@ -98,23 +100,24 @@ while (cap.isOpened()):
                   if (abs(erro)<=25) & (abs(dy)<=15):
                      print('Correto')
                      gpio.output(11, gpio.HIGH)
+                  #elif ((abs(Cyimg-cY1)<=10) & (abs(Cyimg-cY0)>30)) or ((abs(Cyimg-cY0)<=10) & (abs(Cyimg-cY1)>30)) :
+                     #print('Translação esquerda tantos mm')
+                     #translação esquerda tantos mm.
+                     #rotaciona horario 90 graus
+                     #anda ré tantos mm.
+                
                   else:
+                     gpio.output(11, gpio.LOW)
                      if (abs(dy)<=15):
                          if (A==0):
-                             print('Movimento translacional, distancia de',-erro)
+                             print('Movimento 2 translacional, distancia de',-erro)
                          elif (A==1):
                              i=i-1
                              A=0                 
                      else:
                          angulo=atan((cY-Cyimg)/(cX-Cximg))*180/3.14
-                         print('Movimento rotacional, angulo de',angulo)                  
-                    
-                 elif (abs(cX0-cX2)<=10) & (abs(cY1-cY3)>30) & (abs(cX0-cX1)>50) & (abs(cX2-cX3)>50):
-                     print('Curva em L')
-                 elif((abs(cY0-cY2)>30) & (abs(cX1-cX3)<=10) & (abs(cX0-cX1)>50) & (abs(cX2-cX3)>50)):
-                     print('Curva em L')
-
-                     
+                         print('Movimento 2 rotacional, angulo de',angulo)                  
+                                        
                  else: 
                   if (i%2)==0:
                       a=a+1
