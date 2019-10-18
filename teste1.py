@@ -1,13 +1,12 @@
 import numpy as np
 import cv2
 from math import atan
-import RPi.GPIO as gpio
+from gpiozero import LED
 import time
 
 
 #open_can
-gpio.setmode(gpio.BOARD)
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 #define_resolution
 def make_1080p():
@@ -49,7 +48,15 @@ Cyimg=240
 q=0
 k=0
 metadedafita=20
-gpio.setup(11, gpio.OUT)
+motor1 = LED(17)
+motor2 = LED(27)
+motor3 = LED(22)
+motor4 = LED(10)
+motor1i = LED(9)
+motor2i = LED(11)
+motor3i = LED(23)
+motor4i = LED(24)
+
 
 while (cap.isOpened()):
     ret, img = cap.read()
@@ -99,7 +106,25 @@ while (cap.isOpened()):
                   print('I:',i)
                   if (abs(erro)<=25) & (abs(dy)<=15):
                      print('Correto')
-                     gpio.output(11, gpio.HIGH)
+                     motor1.off()
+                     motor2.off()
+                     motor3.off()
+                     motor4.off()
+                     motor1i.on()
+                     motor2i.on()
+                     motor3i.on()
+                     motor4i.on()
+                     
+                     #ré
+                     #motor1i.off()
+                     #motor2i.off()
+                     #motor3i.off()
+                     #motor4i.off()
+                     #motor1.on()
+                     #motor2.on()
+                     #motor3.on()
+                     #motor4.on()
+                     
                   #elif ((abs(Cyimg-cY1)<=10) & (abs(Cyimg-cY0)>30)) or ((abs(Cyimg-cY0)<=10) & (abs(Cyimg-cY1)>30)) :
                      #print('Translação esquerda tantos mm')
                      #translação esquerda tantos mm.
@@ -107,18 +132,61 @@ while (cap.isOpened()):
                      #anda ré tantos mm.
                 
                   else:
-                     gpio.output(11, gpio.LOW)
                      if (abs(dy)<=15):
                          if (A==0):
                              print('Movimento 2 translacional, distancia de',-erro)
+                             if (erro<0):
+                                 motor1.off()
+                                 motor2i.off()
+                                 motor3.off()
+                                 motor4i.off()
+                                 motor1i.on()
+                                 motor2.on()
+                                 motor3i.on()
+                                 motor4.on()
+                             else:
+                                 motor1i.off()
+                                 motor2.off()
+                                 motor3i.off()
+                                 motor4.off()
+                                 motor1.on()
+                                 motor2i.on()
+                                 motor3.on()
+                                 motor4i.on()
                          elif (A==1):
                              i=i-1
                              A=0                 
                      else:
                          angulo=atan((cY-Cyimg)/(cX-Cximg))*180/3.14
-                         print('Movimento 2 rotacional, angulo de',angulo)                  
+                         print('Movimento 2 rotacional, angulo de',angulo)
+                         if (angulo>0):
+                             motor1.off()
+                             motor2.off()
+                             motor3i.off()
+                             motor4i.off()
+                             motor1i.on()
+                             motor2i.on()
+                             motor3.on()
+                             motor4.on()
+                         else:
+                             motor1i.off()
+                             motor2i.off()
+                             motor3.off()
+                             motor4.off()
+                             motor1.on()
+                             motor2.on()
+                             motor3i.on()
+                             motor4i.on()
                                         
-                 else: 
+                 else:
+                  motor1.on()
+                  motor2.on()
+                  motor3.on()
+                  motor4.on()
+                  motor1i.on()
+                  motor2i.on()
+                  motor3i.on()
+                  motor4i.on()
                   if (i%2)==0:
                       a=a+1
                       b=0
@@ -154,20 +222,82 @@ while (cap.isOpened()):
                   qy=dy
                   print('I:',i)
                   if (abs(erro)<=25) & (abs(dx)<=15):
-                     print('Correto')
+                      motor1.off()
+                      motor2i.off()
+                      motor3.off()
+                      motor4i.off()
+                      motor1i.on()
+                      motor2.on()
+                      motor3i.on()
+                      motor4.on()
+                      
+                      #ré
+                      #motor1i.off()
+                      #motor2.off()
+                      #motor3i.off()
+                      #motor4.off()
+                      #motor1.on()
+                      #motor2i.on()
+                      #motor3.on()
+                      #motor4i.on()
+                      print('Correto')
                   else:
                      if (abs(dx)<=15):
                          if (A==0):
                              print('Movimento translacional, distancia de', erro)
+                             if (erro>0):
+                                 motor1.off()
+                                 motor2.off()
+                                 motor3.off()
+                                 motor4.off()
+                                 motor1i.on()
+                                 motor2i.on()
+                                 motor3i.on()
+                                 motor4i.on()
+                             else:
+                                 motor1i.off()
+                                 motor2i.off()
+                                 motor3i.off()
+                                 motor4i.off()
+                                 motor1.on()
+                                 motor2.on()
+                                 motor3.on()
+                                 motor4.on()
                          elif (A==1):
                              i=i-1
                              A=0
                      else:
                          angulo=atan((cX-Cximg)/(cY-Cyimg))*180/3.14
+                         if (angulo<0):
+                             motor1.off()
+                             motor2.off()
+                             motor3i.off()
+                             motor4i.off()
+                             motor1i.on()
+                             motor2i.on()
+                             motor3.on()
+                             motor4.on()
+                         else:
+                             motor1i.off()
+                             motor2i.off()
+                             motor3.off()
+                             motor4.off()
+                             motor1.on()
+                             motor2.on()
+                             motor3i.on()
+                             motor4i.on()
                          print('Movimento rotacional, angulo de',-angulo)                  
                     
                      
-                 else: 
+                 else:
+                  motor1.on()
+                  motor2.on()
+                  motor3.on()
+                  motor4.on()
+                  motor1i.on()
+                  motor2i.on()
+                  motor3i.on()
+                  motor4i.on()
                   if (i%2)==0:
                       a=a+1
                       b=0
