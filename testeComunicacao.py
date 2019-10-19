@@ -2,7 +2,18 @@ import RPi.GPIO as gpio
 import serial
 import time
 
-arduino = serial.Serial('/dev/ttyACM0', 9600)
+
+###############################################################
+## TESTE DO MAURÍCIO
+def findArduino():
+    for port in serial.tools.list_ports.comports():
+        if  port.vid != None and port.pid != None:
+            if ('{:04X}'.format(port.vid) == __arduinoVid__)and('{:04X}'.format(port.pid) == __arduinoPid__):
+                result = port.device
+    return result
+###############################################################
+
+arduino = serial.Serial(findArduino(), 9600, timeout = None)
 
 #gpio.setmode(gpio.BCM)
 #gpio.setup(20, gpio.OUT)
