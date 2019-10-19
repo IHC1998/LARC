@@ -2,6 +2,8 @@ import RPi.GPIO as gpio
 import serial
 import time
 
+__arduinoVid__ = '2341'
+__arduinoPid__ = '0043'
 
 ###############################################################
 ## TESTE DO MAURÍCIO
