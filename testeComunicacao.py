@@ -1,5 +1,6 @@
 import RPi.GPIO as gpio
 import serial
+import serial.tools.list_ports
 import time
 
 __arduinoVid__ = '2341'
@@ -13,6 +14,13 @@ def findArduino():
             if ('{:04X}'.format(port.vid) == __arduinoVid__)and('{:04X}'.format(port.pid) == __arduinoPid__):
                 result = port.device
     return result
+
+try:
+    if portaUSB.inWaiting()>0:
+        caracLido = arduino.read().decode('utf-8')
+except serial.SerialException:
+    return caracLido
+    pass
 ###############################################################
 
 arduino = serial.Serial(findArduino(), 9600, timeout = None)
