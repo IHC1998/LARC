@@ -69,7 +69,7 @@ while (cap.isOpened()):
         kernel = np.ones((3,3),np.uint8)
         img_filter = cv.dilate(thresh, kernel, iterations=5)
         cv.imshow('Erode', img_filter)
-        contours, hierarchy = cv.findContours(thresh,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv.findContours(img_filter,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
         #cnt=contours[0]
         #area = cv.contourArea(cv.approxPolyDP(cnt, 0.02*cv.arcLength(cnt, True), True))
         for c in contours:
