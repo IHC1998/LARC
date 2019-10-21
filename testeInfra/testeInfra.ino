@@ -1,6 +1,8 @@
 #include <Wire.h>
 #include <VL53L0X.h>
 
+#define qtdMedia 20
+
 VL53L0X sensor;
 VL53L0X sensor2;
 VL53L0X sensor3;
@@ -8,8 +10,7 @@ int inf_e = 8;
 int inf_m = 12;
 int inf_d = 13;
 
-unsigned long previousMillis;
-long delayEnvio = 50; //Tempo em ms do intervalo a ser executado
+float mediaLeft, mediaMiddle, mediaRight;
 
 void setup() {
   // put your setup code here, to run once:.
@@ -31,33 +32,36 @@ void setup() {
   //SENSOR 2
   pinMode(inf_m, INPUT);
   sensor2.init(true);
- sensor2.setAddress((uint8_t)25);
+  sensor2.setAddress((uint8_t)25);
 
   //SENSOR 3
- pinMode(inf_d, INPUT);
- sensor3.init(true);
+  pinMode(inf_d, INPUT);
+  sensor3.init(true);
   sensor3.setAddress((uint8_t)28);
 
-  sensor.setTimeout(50);
-  sensor2.setTimeout(50);
-  sensor3.setTimeout(50);
+  sensor.setTimeout(20);
+  sensor2.setTimeout(20);
+  sensor3.setTimeout(20);
 }
 
 void loop() {
   //DISTANCE_L = Distância sensor da esquerda / DISTANCE_R = Distância sensor da direita
   //DISTANCE_M = Distânica sensor do meio
+  mediaLeft = 0; 
+  mediaMiddle = 0;
+  mediaRight = 0;
+      
+  for(int j=0; j<qtdMedia; j++){
+      mediaLeft += sensor.readRangeSingleMillimeters(); 
+      mediaMiddle += sensor2.readRangeSingleMillimeters();
+      mediaRight += sensor3.readRangeSingleMillimeters();
+  }
   
-  float DISTANCE_L = (sensor.readRangeSingleMillimeters());
-  float DISTANCE_R = (sensor2.readRangeSingleMillimeters());
-  float DISTANCE_M = (sensor3.readRangeSingleMillimeters());
-
-  Serial.println(DISTANCE_L);
-  Serial.println(DISTANCE_R);
-  Serial.println(DISTANCE_M); 
-  delay(50);
-
-
-
-
+  mediaLeft = mediaLeft/qtdMedia;
+  mediaMiddle = mediaMiddle/qtdMedia;
+  mediaRight = mediaRight/qtdMedia;
   
+  Serial.println(mediaLeft);
+  Serial.println(mediaMiddle);
+  Serial.println(mediaRight); 
 }
