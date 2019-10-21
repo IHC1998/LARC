@@ -1,62 +1,47 @@
 import RPi.GPIO as gpio
 import serial
-import serial.tools.list_ports
 import time
+import serial.tools.list_ports
+from serial import Serial
 
 __arduinoVid__ = '2341'
-__arduinoPid__ = '0043'
+#__arduinoPid__ = '0043'
+__arduinoPid__ = '8037'
 
-###############################################################
-## TESTE DO MAURÍCIO
-def findArduino():
-    for port in serial.tools.list_ports.comports():
-        if  port.vid != None and port.pid != None:
-            if ('{:04X}'.format(port.vid) == __arduinoVid__)and('{:04X}'.format(port.pid) == __arduinoPid__):
-                result = port.device
-    return result
+#def findArduino():
+#    for port in serial.tools.list_ports.comports():
+#        if  port.vid != None and port.pid != None:
+#            if ('{:04X}'.format(port.vid) == __arduinoVid__)and('{:04X}'.format(port.pid) == __arduinoPid__):
+#                result = port.device
+#    return result
 
-try:
-    if portaUSB.inWaiting()>0:
-        caracLido = arduino.read().decode('utf-8')
-except serial.SerialException:
-    return caracLido
-    pass
-###############################################################
+arduino = Serial(
+        port='/dev/ttyS0',
+        baudrate = 9600,
+        parity = serial.PARITY_NONE,
+        stopbits = serial.STOPBITS_ONE,
+        bytesize = serial.EIGHTBITS,
+        timeout = None)
 
-arduino = serial.Serial(findArduino(), 9600, timeout = None)
+#arduino = serial.Serial(findArduino(), 9600, timeout = None)
 
 #gpio.setmode(gpio.BCM)
 #gpio.setup(20, gpio.OUT)
 
-while (True):
-    #VALOR_RECEBIDO = arduino.readline()
-    #print(VALOR_RECEBIDO.decode("utf-8"))
-    #VALOR_RECEBIDO = 0
-    VALOR_RECEBIDO = arduino.readline()
-    #print(float(VALOR_RECEBIDO.decode("utf-8")))
-    #if( float(VALOR_RECEBIDO.decode("utf-8"))<10):
-    print('E')
-    print(VALOR_RECEBIDO.decode("utf-8"))
-    if(VALOR_RECEBIDO.decode("utf-8") == 'T'):
-        print('Infinito')
-    else:
-        print(float(VALOR_RECEBIDO.decode("utf-8")))
-    #VALOR_RECEBIDO = 0
-    VALOR_RECEBIDO = arduino.readline()
-    print('D')
-    if(VALOR_RECEBIDO.decode("utf-8") == 'T'):
-        print('Infinito')
-    else:
-        print(float(VALOR_RECEBIDO.decode("utf-8")))
-    #VALOR_RECEBIDO = 0
-    VALOR_RECEBIDO = arduino.readline()
-    print('M')
-    if(VALOR_RECEBIDO.decode("utf-8") == 'T'):
-        print('Infinito')
-    else:
-        print(float(VALOR_RECEBIDO.decode("utf-8")))
+
+arduino.write(b'A')
+print('EnviadoA')
+time.sleep(1)
+arduino.write(b'C')
+print('EnviadoM')
+time.sleep(1)
+#arduino.write(b'D')
+#time.sleep(1)
     
+    #try:
+    #    if arduino.inWaiting()>0:
+    #        caracLido = arduino.readline()
+    #        print(caracLido.decode("utf-8"))
+    #except serial.SerialException:
+    #    pass
     
-        #gpio.output(20, gpio.HIGH)
-    #elif(:
-        #gpiput(20, gpio.LOW)
