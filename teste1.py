@@ -1,18 +1,31 @@
 from __future__ import print_function
 import numpy as np
-#import cv2
-from math import atan
-#import RPi.GPIO as gpio
-import time
 import cv2 as cv
+from math import atan
+from gpiozero import LED
+import time
+import serial
 import argparse
 
-
+#arduino = serial.Serial('/dev/ttyACM0', 9600)
 #open_can
-#gpio.setmode(gpio.BOARD)
-cap = cv.VideoCapture(1)
+cap = cv.VideoCapture(0)
 
 #define_resolution
+def sensorInfra():
+    VALOR_RECEBIDO = 0
+    VALOR_RECEBIDO = arduino.readline()
+    print('E')
+    print(float(VALOR_RECEBIDO.decode("utf-8")))
+    VALOR_RECEBIDO = 0
+    VALOR_RECEBIDO = arduino.readline()
+    print('D')
+    print(float(VALOR_RECEBIDO.decode("utf-8")))
+    VALOR_RECEBIDO = 0
+    VALOR_RECEBIDO = arduino.readline()
+    print('M')
+    print(float(VALOR_RECEBIDO.decode("utf-8")))
+    
 def make_1080p():
     cap.set(3, 1920)
     cap.set(4, 1080)
@@ -52,33 +65,43 @@ Cyimg=240
 q=0
 k=0
 metadedafita=20
-#gpio.setup(11, gpio.OUT)
+motor1 = LED(19)
+motor2 = LED(6)
+motor3 = LED(11)
+motor4 = LED(10)
+motor1i = LED(26)
+motor2i = LED(13)
+motor3i = LED(5)
+motor4i = LED(9)
+o=0
+oa=0
+
 
 while (cap.isOpened()):
     ret, img = cap.read()
     
     if ret == True:
+        #gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         gray = cv.cvtColor(img, cv.COLOR_BGR2HSV)
         gray_filter=cv.inRange(gray, (0, 0, 120), (180, 242, 255))
         #ret,thresh = cv2.threshold(dst,100,255,0)
         ret,thresh = cv.threshold(gray_filter,100,255,0)
         #img_filter=cv.morphologyEx(thresh, cv.MORPH_OPEN,
-        #kernel = cv.getStructuringElement(shape=cv.MORPH_ELLIPSE, ksize=(5,5))
-        #img_filter1 = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel, iterations=3)
         #cv.imshow('Morph', img_filter)
+        kernel1 = np.ones((3,3),np.uint8)
+        img_filter = cv.dilate(thresh, kernel1, iterations=5)
         kernel = np.ones((3,3),np.uint8)
-        img_filter = cv.dilate(thresh, kernel, iterations=5)
-        cv.imshow('Erode', img_filter)
-        contours, hierarchy = cv.findContours(img_filter,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
-        #cnt=contours[0]
-        #area = cv.contourArea(cv.approxPolyDP(cnt, 0.02*cv.arcLength(cnt, True), True))
+        img_filter1 = cv.erode(img_filter,kernel,iterations = 20)
+        #cv.imshow('Erode', img_filter)
+        contours, hierarchy = cv.findContours(img_filter1,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
+        #ret,thresh = cv.threshold(gray,100,255,0)
+
+        #contours, hierarchy = cv.findContours(thresh,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
         for c in contours:
             M = cv.moments(c)
             if M["m00"] != 0:
              cX = int(M["m10"] / M["m00"])
              cY = int(M["m01"] / M["m00"])
-             #area = cv.contourArea(cnt)
-             #print('Area:',area)
              cX3=cX2
              cX2=cX1
              cX1=cX0
@@ -113,8 +136,44 @@ while (cap.isOpened()):
                   qx=dx
                   print('I:',i)
                   if (abs(erro)<=25) & (abs(dy)<=15):
+                     oa=1
+                     if (o!=oa):
+                         o=oa
+                         motor1i.off()
+                         motor2i.off()
+                         motor3i.off()
+                         motor4i.off()
+                         time.sleep(0.1)
                      print('Correto')
-                     #gpio.output(11, gpio.HIGH)
+                     motor1.off()
+                     motor2.off()
+                     motor3.off()
+                     motor4.off()
+                     motor1i.on()
+                     motor2i.on()
+                     motor3i.on()
+                     motor4i.on()
+                     
+
+                     
+                     #ré
+                     #if (o!=oa):
+                      #   o=oa
+                       #  motor1i.off()
+                         #motor2i.off()
+                         #motor3i.off()
+                         #motor4i.off()
+                         #time.sleep(0.1)
+                     #motor1.on()
+                     #motor2.on()
+                     #motor3.on()
+                     #motor4.on()
+                     #motor1i.on()
+                     #motor2i.on()
+                     #motor3i.on()
+                     #motor4i.on()
+                     
+                     
                   #elif ((abs(Cyimg-cY1)<=10) & (abs(Cyimg-cY0)>30)) or ((abs(Cyimg-cY0)<=10) & (abs(Cyimg-cY1)>30)) :
                      #print('Translação esquerda tantos mm')
                      #translação esquerda tantos mm.
@@ -122,18 +181,73 @@ while (cap.isOpened()):
                      #anda ré tantos mm.
                 
                   else:
-                     #gpio.output(11, gpio.LOW)
                      if (abs(dy)<=15):
+                         oa=2
+                         if (o!=oa):
+                             o=oa
+                             motor1i.off()
+                             motor2i.off()
+                             motor3i.off()
+                             motor4i.off()
+                             time.sleep(0.1)
                          if (A==0):
                              print('Movimento 2 translacional, distancia de',-erro)
+                             if (erro<0):
+                                 motor1.on()
+                                 motor2.off()
+                                 motor3.off()
+                                 motor4.on()
+                                 motor1i.on()
+                                 motor2i.on()
+                                 motor3i.on()
+                                 motor4i.on()
+                             else:
+                                 motor1.off()
+                                 motor2.on()
+                                 motor3.on()
+                                 motor4.off()
+                                 motor1i.on()
+                                 motor2i.on()
+                                 motor3i.on()
+                                 motor4i.on()
                          elif (A==1):
                              i=i-1
                              A=0                 
                      else:
+                         oa=3
+                         if (o!=oa):
+                             o=oa
+                             motor1i.off()
+                             motor2i.off()
+                             motor3i.off()
+                             motor4i.off()
+                             time.sleep(0.1)
                          angulo=atan((cY-Cyimg)/(cX-Cximg))*180/3.14
-                         print('Movimento 2 rotacional, angulo de',angulo)                  
+                         print('Movimento 2 rotacional, angulo de',angulo)
+                         if (angulo<0):
+                             motor1.off()
+                             motor2.off()
+                             motor3.on()
+                             motor4.on()
+                             motor1i.on()
+                             motor2i.on()
+                             motor3i.on()
+                             motor4i.on()
+                         else:
+                             motor1.on()
+                             motor2.on()
+                             motor3.off()
+                             motor4.off()
+                             motor1i.on()
+                             motor2i.on()
+                             motor3i.on()
+                             motor4i.on()
                                         
-                 else: 
+                 else:
+                  motor1i.off()
+                  motor2i.off()
+                  motor3i.off()
+                  motor4i.off()
                   if (i%2)==0:
                       a=a+1
                       b=0
@@ -169,20 +283,79 @@ while (cap.isOpened()):
                   qy=dy
                   print('I:',i)
                   if (abs(erro)<=25) & (abs(dx)<=15):
-                     print('Correto')
+                      motor1.on()
+                      motor2.off()
+                      motor3.off()
+                      motor4.on()
+                      motor1i.on()
+                      motor2i.on()
+                      motor3i.on()
+                      motor4i.on()
+                      
+                      #ré
+                      #motor1.off()
+                      #motor2.on()
+                      #motor3.on()
+                      #motor4.off()
+                      #motor1i.on()
+                      #motor2i.on()
+                      #motor3i.on()
+                      #motor4i.on()
+                      print('Correto')
                   else:
                      if (abs(dx)<=15):
                          if (A==0):
                              print('Movimento translacional, distancia de', erro)
+                             if (erro>0):
+                                 motor1.off()
+                                 motor2.off()
+                                 motor3.off()
+                                 motor4.off()
+                                 motor1i.on()
+                                 motor2i.on()
+                                 motor3i.on()
+                                 motor4i.on()
+                             else:
+                                 
+                                 motor1.on()
+                                 motor2.on()
+                                 motor3.on()
+                                 motor4.on()
+                                 motor1i.on()
+                                 motor2i.on()
+                                 motor3i.on()
+                                 motor4i.on()
                          elif (A==1):
                              i=i-1
                              A=0
                      else:
                          angulo=atan((cX-Cximg)/(cY-Cyimg))*180/3.14
+                         if (angulo<0):
+                             motor1.on()
+                             motor2.on()
+                             motor3.off()
+                             motor4.off()
+                             motor1i.on()
+                             motor2i.on()
+                             motor3i.on()
+                             motor4i.on()
+                         else:
+                             motor1.off()
+                             motor2.off()
+                             motor3.on()
+                             motor4.on()
+                             motor1i.on()
+                             motor2i.on()
+                             motor3i.on()
+                             motor4i.on()
                          print('Movimento rotacional, angulo de',-angulo)                  
                     
                      
-                 else: 
+                 else:
+                  motor1i.off()
+                  motor2i.off()
+                  motor3i.off()
+                  motor4i.off()
                   if (i%2)==0:
                       a=a+1
                       b=0

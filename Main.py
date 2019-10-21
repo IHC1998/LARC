@@ -26,8 +26,12 @@ arduino = serial.Serial(findArduino(), 9600, timeout = None)
 
 
 '''
-A,B,C,D = posicao elevador; L = Ligar Sensor de Cor; I = Liga eltroima
-S = Desliga eletroima; E = Liga Infravermelho;
+A,B,C,D = posicao elevador;
+F = Calibra Elevador
+L = Ligar Sensor de Cor;
+I = Liga eltroima
+S = Desliga eletroima;
+E = Liga Infravermelho;
 '''
 
 
@@ -36,10 +40,11 @@ K = quantidade de conteineres q foi pega na pilha
 V = quantidade containeres verde depositados em uma pilha
 A = quantidade containeres azul depositados em uma pilha
 '''
+'''
 K = 0
 V = 0
 A = 0
-
+'''
 #def sobeElevadorCarregado():
 
 def posicaoElevadorCarregadoVerde():
@@ -55,7 +60,7 @@ def posicaoElevadorCarregadoVerde():
     elif(V == 3):
         arduino.write(b'A')
         V = V+1
-    elif(V == 4):
+   # elif(V == 4):
         #Zerar a pilha e começar outra
 
 def posicaoElevadorCarregadoAzul():
@@ -71,7 +76,7 @@ def posicaoElevadorCarregadoAzul():
     elif(A == 3):
         arduino.write(b'A')
         A = A+1
-    elif(A == 4):
+ #   elif(A == 4):
         #Zerar a pilha e começar outra
 
 
@@ -85,7 +90,7 @@ def sobeElevadorDescarregado():
        arduino.write(b'C')
     if (K == 3):
         arduino.write(b'D')
-    if (K == 4):
+#    if (K == 4):
         #Zerar a pilha e começar outra
 
 
@@ -97,14 +102,18 @@ def desceElevadorDescarregado():
         arduino.write(b'B')
         K = K+1
     if (K == 2):
-       arduino.write(b'C')
+        arduino.write(b'C')
         K = K+1 
     if (K == 3):
         arduino.write(b'D')
         K = K+1
-    if (K == 4):
+    #if (K == 4):
         #Zerar a pilha e começar outra
-        
+    
+#Calibração do elevador
+#def calibracaoElevador:
+#    arduino.write('')
+    
 def ligaCor():
     arduino.write(b'L')
     print('LigouCor')
