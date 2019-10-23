@@ -1,6 +1,6 @@
 byte passo = 0, passo1=8, passo2=1;
 bool Up=HIGH, first=true, clockWise=HIGH;
-int microStep=1;
+int microStep=256;
 int PWM = 0 + microStep, PWMToPin=0, PWMPin=0;
 int i = 1, lastPin = 5;
 bool clockWiseLast = HIGH, trocou = false;
@@ -94,13 +94,13 @@ void microPasso(){
 //                Serial.print(PWMPin);
 //                Serial.print(" : ");
 //                Serial.println(i);
-                delayMicroseconds (300);
+                delayMicroseconds (300*microStep);
           
                 if(PWM>=256 && Up==HIGH){
                   lastPin=PWMPin;
                   Up=LOW;
                   break;
-                }
+                } 
                 if(PWM<=0 && Up==LOW){
                   Up=HIGH;
                   break;
